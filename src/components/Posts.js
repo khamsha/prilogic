@@ -25,7 +25,7 @@ const Posts = ({posts}) => (
       <th>{post.qty}</th>
       <th><Button key={i}>Edit</Button></th>
       <th><StarRatingComponent 
-          name={i} 
+          name={"name"+i} 
           starCount={5}
           starColor={"blue"}
         /></th>

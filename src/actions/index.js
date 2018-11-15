@@ -12,7 +12,11 @@ export const REQUEST_POSTS = "REQUEST_POSTS";
 export const RECEIVE_POSTS = "RECEIVE_POSTS";
 export const SELECT_STORE = "SELECT_STORE";
 export const RESET_STORE = "RESET_STORE";
-//export const CREATE_SHIPMENT = "CREATE_SHIPMENT"
+export const CREATE_SHIPMENT = "CREATE_SHIPMENT"
+export const CREATE_NODE = "CREATE_NODE";
+//export const REQUEST_STATS ="REQUEST_STATS"
+//export const RECEIVE_STATS ="RECEIVE_STATS"
+
 
 export const selectStore = storeId => ({
   type: SELECT_STORE,
@@ -71,9 +75,38 @@ export const fetchPostsIfNeeded = storeId => (dispatch, getState) => {
     return dispatch(fetchPosts(storeId));
   }
 };
-/*export const createShipment = (storeId, values) => ({
-  type: CREATE_SHIPMENT,
-  storeId,
-  posts: values.map(post => ({transaction: post[0], storeId: post[1], qty: post[2]})),
-  receivedAt: Date.now()
-}); */
+
+export const createNode = newStore => ({
+  type: CREATE_NODE,
+  newStore
+});
+
+
+
+export const createShipment = (storeNb, qty) => (dispatch) => {
+dispatch({type: CREATE_SHIPMENT});
+var values = [["","",Math.round(Math.random()*100),storeNb, qty]];
+var body = {values: values};
+window.gapi.client.sheets.spreadsheets.values.append({
+  spreadsheetId: spreadsheetId,
+  valueInputOption: "USER_ENTERED",
+  range: "Store",
+  resource: body
+}).then((response) => {
+ var result = response.result;
+ console.log(`${result.updates.updatedCells} cells appended.`);
+});
+};
+
+
+/*export const receiveStats = (values) => ({
+  type: RECEIVE_STATS,
+  stats: values.map(stat => ({stPivot: stat[0], sumPivot: stat[1]})),
+});
+
+const fetchStats = () => (dispatch) => {
+  dispatch({type: REQUEST_STATS});
+  window.gapi.client.sheets.spreadsheets.values
+            .get({spreadsheetId, range: "Pivot!A3:B100"})
+            .then(data => dispatch(receiveStats(data.result.values)))};
+*/
