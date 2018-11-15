@@ -3,13 +3,14 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Button } from "reactstrap";
 
-import { selectStore, fetchPostsIfNeeded, resetStore } from "../actions";
+import { selectStore, fetchPostsIfNeeded, resetStore, createShipment} from "../actions";
 import Picker from "../components/Picker";
 import Posts from "../components/Posts";
 
 class App extends Component {
   static propTypes = {
     selectedStore: PropTypes.string.isRequired,
+    nodeList: PropTypes.array.isRequired,
     posts: PropTypes.array.isRequired,
     isFetching: PropTypes.bool.isRequired,
     lastUpdated: PropTypes.number,
@@ -39,17 +40,21 @@ class App extends Component {
     dispatch(resetStore(selectedStore));
     dispatch(fetchPostsIfNeeded(selectedStore));
   };
+  submitShipment = () => {
+    this.props.dispatch(createShipment());
+  };
 
   render() {
-    const { selectedStore, posts, isFetching, lastUpdated } = this.props;
+    const { selectedStore, posts, isFetching, lastUpdated, nodeList } = this.props;
     const isEmpty = posts.length === 0;
     return (
       <div className="body">
         <Picker
           value={selectedStore}
           onChange={this.handleChange}
-          options={["All shipments", "ALTU", "VEGAS", "CARKAZ"]}
+          options={nodeList}
         />
+        
         <p>
           {lastUpdated && (
             <span>
@@ -71,14 +76,13 @@ class App extends Component {
             <Posts posts={posts} />
           </div>
         )}
-        <Button>New shipment</Button>
       </div>
     );
   }
 }
 
 const mapStateToProps = state => {
-  const { selectedStore, postsByStoreId } = state;
+  const { selectedStore, postsByStoreId, nodeList } = state;
   const { isFetching, lastUpdated, items: posts } = postsByStoreId[
     selectedStore
   ] || {
@@ -87,6 +91,7 @@ const mapStateToProps = state => {
   };
 
   return {
+    nodeList,
     selectedStore,
     posts,
     isFetching,

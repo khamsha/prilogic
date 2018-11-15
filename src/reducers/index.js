@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 import {
   SELECT_STORE, RESET_STORE,
-  REQUEST_POSTS, RECEIVE_POSTS
+  REQUEST_POSTS, RECEIVE_POSTS, CREATE_NODE, RECEIVE_STATS
 } from '../actions'
 
 const selectedStore = (state = 'All shipments', action) => {
@@ -10,6 +10,15 @@ const selectedStore = (state = 'All shipments', action) => {
       return action.storeId
     default:
       return state
+  }
+}
+
+const nodeList = (state = ["All shipments", "ALTU", "TULA", "VEGAS"], action) => {
+  switch (action.type) {
+    case CREATE_NODE:
+    return action.nodeList;
+    default:
+    return state;
   }
 }
 
@@ -57,7 +66,21 @@ const postsByStoreId = (state = { }, action) => {
   }
 }
 
+/*const stats = (state = {}, action) => {
+  switch (action.type) {
+      case RECEIVE_STATS:
+      return {
+        ...state,
+        stats: action.stats,
+      }
+    default:
+      return state
+  }
+}*/
+
 const rootReducer = combineReducers({
+  //stats,
+  nodeList,
   posts,
   postsByStoreId,
   selectedStore
