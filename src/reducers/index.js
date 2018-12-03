@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 import {
   SELECT_STORE, RESET_STORE,
-  REQUEST_POSTS, RECEIVE_POSTS, CREATE_NODE, RECEIVE_STATS
+  REQUEST_POSTS, RECEIVE_POSTS, CREATE_NODE, RECEIVE_STATS, REQUEST_STATS
 } from '../actions'
 
 const selectedStore = (state = 'All shipments', action) => {
@@ -66,20 +66,28 @@ const postsByStoreId = (state = { }, action) => {
   }
 }
 
-/*const stats = (state = {}, action) => {
+
+const stats = (state = {
+  items: []
+}, action) => {
   switch (action.type) {
-      case RECEIVE_STATS:
+    case REQUEST_STATS:
       return {
         ...state,
-        stats: action.stats,
+      }
+    case RECEIVE_STATS:
+      return {
+        ...state,
+        items: action.stats,
+        lastUpdated: action.receivedAt
       }
     default:
       return state
   }
-}*/
+}
 
 const rootReducer = combineReducers({
-  //stats,
+  stats,
   nodeList,
   posts,
   postsByStoreId,

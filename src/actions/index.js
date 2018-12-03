@@ -4,6 +4,7 @@ import {
   discoveryDocs,
   scope,
   range,
+  range2,
   spreadsheetId
 } from "../credentials";
 import loadScript from 'load-script';
@@ -14,8 +15,8 @@ export const SELECT_STORE = "SELECT_STORE";
 export const RESET_STORE = "RESET_STORE";
 export const CREATE_SHIPMENT = "CREATE_SHIPMENT"
 export const CREATE_NODE = "CREATE_NODE";
-//export const REQUEST_STATS ="REQUEST_STATS"
-//export const RECEIVE_STATS ="RECEIVE_STATS"
+export const REQUEST_STATS ="REQUEST_STATS"
+export const RECEIVE_STATS ="RECEIVE_STATS"
 
 
 export const selectStore = storeId => ({
@@ -98,15 +99,36 @@ window.gapi.client.sheets.spreadsheets.values.append({
 });
 };
 
+export const requestStats = () => ({
+  type: REQUEST_STATS
+});
 
-/*export const receiveStats = (values) => ({
+export const receiveStats = (values) => ({
   type: RECEIVE_STATS,
   stats: values.map(stat => ({stPivot: stat[0], sumPivot: stat[1]})),
+  receivedAt: Date.now()
 });
 
 const fetchStats = () => (dispatch) => {
-  dispatch({type: REQUEST_STATS});
+  dispatch(requestStats());
   window.gapi.client.sheets.spreadsheets.values
-            .get({spreadsheetId, range: "Pivot!A3:B100"})
+            .get({spreadsheetId, range: range2})
             .then(data => dispatch(receiveStats(data.result.values)))};
-*/
+
+
+const shouldFetchStats = (state) => {
+  const stats = state.stats;
+  if (!stats) {
+    return true;
+  }
+  if (stats.isFetching) {
+    return false;
+  }
+  return stats;
+};
+
+export const fetchStatsIfNeeded = () => (dispatch, getState) => {
+  if (shouldFetchStats(getState())) {
+    return dispatch(fetchStats());
+  }
+};
